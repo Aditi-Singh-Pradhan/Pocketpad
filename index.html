@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<body style="margin:0 ; overflow:hidden;">
+<canvas id = "c"></canvas>
+
+<script>
+
+const ws = new
+Websocket("ws://10.50.6.92:8765");
+
+ws.onopen = () => console.log(" Connected to server");
+ws.onerror = e => console.log(" WS error", e);
+
+
+const canvas = document.getElementById("c");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+canvas.style.touchAction = "none";
+
+canvas.addEventListener("touchmove", (e) => {
+    const touch = e.touches[0];
+    
+    ws.send(JSON.stringify({
+        x: touch.clientX / canvas.width,
+        y: touch.clientY / canvas.height
+    }));
+});
+
+</script>
+</body>
+</html>
