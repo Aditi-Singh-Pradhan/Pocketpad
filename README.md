@@ -2,7 +2,8 @@
 
 Turn your phone into a wireless trackpad using WebSockets.
 
-Open a webpage on your phone, drag your finger, and your PC mouse follows in real time — no app install needed.
+Open a webpage on your phone, drag your finger, and your PC mouse follows in real time.
+Especially useful if your laptop or desktop doesn't have a touchscreen or stylus support — your phone fills that gap instantly, no hardware needed.
 
 ---
 
