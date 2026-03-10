@@ -7,7 +7,7 @@
 <script>
 
 const ws = new
-Websocket("ws://10.50.6.92:8765");
+Websocket("ws://10.xx.x.xx:8765");           # use your IP address
 
 ws.onopen = () => console.log(" Connected to server");
 ws.onerror = e => console.log(" WS error", e);
@@ -30,4 +30,5 @@ canvas.addEventListener("touchmove", (e) => {
 
 </script>
 </body>
+
 </html>
