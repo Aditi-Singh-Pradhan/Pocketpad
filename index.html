@@ -1,17 +1,15 @@
 <!DOCTYPE html>
 <html>
 
-<body style="margin:0 ; overflow:hidden;">
-<canvas id = "c"></canvas>
+<body style="margin:0; overflow:hidden;">
+<canvas id="c"></canvas>
 
 <script>
 
-const ws = new
-Websocket("ws://10.xx.x.xx:8765");           # use your IP address
+const ws = new WebSocket("ws://192.168.137.1:8765");
 
-ws.onopen = () => console.log(" Connected to server");
-ws.onerror = e => console.log(" WS error", e);
-
+ws.onopen = () => console.log("Connected to server");
+ws.onerror = e => console.log("WS error", e);
 
 const canvas = document.getElementById("c");
 canvas.width = window.innerWidth;
@@ -19,16 +17,33 @@ canvas.height = window.innerHeight;
 
 canvas.style.touchAction = "none";
 
+let lastX = null;
+let lastY = null;
+
 canvas.addEventListener("touchmove", (e) => {
+    e.preventDefault();
+
     const touch = e.touches[0];
-    
-    ws.send(JSON.stringify({
-        x: touch.clientX / canvas.width,
-        y: touch.clientY / canvas.height
-    }));
+
+    if (lastX !== null && lastY !== null) {
+
+        const dx = touch.clientX - lastX;
+        const dy = touch.clientY - lastY;
+
+        if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ dx, dy }));
+        }
+    }
+
+    lastX = touch.clientX;
+    lastY = touch.clientY;
+});
+
+canvas.addEventListener("touchend", () => {
+    lastX = null;
+    lastY = null;
 });
 
 </script>
 </body>
-
 </html>
