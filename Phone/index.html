@@ -22,9 +22,17 @@ let startX = null;
 let startY = null;
 let lastX = null;
 let lastY = null;
+let scrollLastY = null;
 
 canvas.addEventListener("touchstart", (e) => {
     e.preventDefault();
+
+    if (e.touches.length > 1) {
+        // Handle scroll with two fingers
+        state = "scrolling";
+        scrollLastY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+        return;
+    }
 
     const touch = e.touches[0];
     startX = touch.clientX;
@@ -40,12 +48,22 @@ canvas.addEventListener("touchmove", (e) => {
     const touch = e.touches[0];
     const currentX = touch.clientX;
     const currentY = touch.clientY;
+    
+    if (state === "scrolling") {
+        const currentScrollY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+        const scrollDeltaY = (currentScrollY - scrollLastY)*0.1;
 
+        ws.send(JSON.stringify({ type: "scroll", scroll_y: -scrollDeltaY }));
+
+        scrollLastY = currentScrollY;
+        return;
+    }
+    
     if (state === "waiting") {
-        if (Math.hypot(currentX - startX, currentY - startY) > 10) {
+        if (Math.hypot(currentX - startX, currentY - startY) > 5) {
             state = "moving";
-            lastX = currentX;
-            lastY = currentY;
+            lastX = startX;   // not current X or Y to avoid jump
+            lastY = startY;
         }
     }
 
@@ -72,6 +90,7 @@ canvas.addEventListener("touchend",(e) => {
 
     lastX = null;
     lastY = null;
+    scrollLastY = null;
 });
 
 </script>
