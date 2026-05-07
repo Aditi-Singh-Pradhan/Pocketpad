@@ -17,29 +17,59 @@ canvas.height = window.innerHeight;
 
 canvas.style.touchAction = "none";
 
+let state = "idle";                 // "idle", "waiting", "moving"
+let startX = null;
+let startY = null;
 let lastX = null;
 let lastY = null;
+
+canvas.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+
+    const touch = e.touches[0];
+    startX = touch.clientX;
+    startY = touch.clientY;
+
+    state = "waiting";          // Wait to see if it's a click or move
+
+});
 
 canvas.addEventListener("touchmove", (e) => {
     e.preventDefault();
 
     const touch = e.touches[0];
+    const currentX = touch.clientX;
+    const currentY = touch.clientY;
 
-    if (lastX !== null && lastY !== null) {
-
-        const dx = touch.clientX - lastX;
-        const dy = touch.clientY - lastY;
-
-        if (ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({ type:"move", dx, dy }));
+    if (state === "waiting") {
+        if (Math.hypot(currentX - startX, currentY - startY) > 10) {
+            state = "moving";
+            lastX = currentX;
+            lastY = currentY;
         }
     }
 
-    lastX = touch.clientX;
-    lastY = touch.clientY;
+    if (state === "moving") {
+        const dx = currentX - lastX;
+        const dy = currentY - lastY;
+
+        ws.send(JSON.stringify({ type: "move", dx, dy }));
+
+        lastX = currentX;
+        lastY = currentY;
+    }
 });
 
-canvas.addEventListener("touchend", () => {
+canvas.addEventListener("touchend",(e) => {
+    e.preventDefault();
+
+    if (state === "waiting") {
+        ws.send(JSON.stringify({ type: "click", button: "left" }));
+    }
+    state = "idle";
+    startX = null;
+    startY = null;
+
     lastX = null;
     lastY = null;
 });
