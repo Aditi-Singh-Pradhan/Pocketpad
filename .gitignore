@@ -1,0 +1,4 @@
+.vscode/
+*.tar.gz
+*.whl
+__pycache__/
