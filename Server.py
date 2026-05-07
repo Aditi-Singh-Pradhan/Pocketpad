@@ -5,9 +5,22 @@ import http.server
 import threading
 import os
 from pynput.mouse import Controller, Button
-
+import socket
 
 print("Server is running... Waiting for Phone to connect.")
+
+#get local IP address for user convenience
+def get_local_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # doesn't have to be reachable
+        s.connect(('8.8.8.8', 80))
+        ip = s.getsockname()[0]
+    except Exception:
+        ip = '127.0.0.1'
+    finally:
+        s.close()
+    return ip
 
 
 # Serve index.html on port 8080
@@ -18,7 +31,8 @@ def serve_html():
     handler = http.server.SimpleHTTPRequestHandler
     httpd = http.server.HTTPServer(("0.0.0.0", 8080), handler)
 
-    print("HTML served at http://192.168.137.1:8080")
+    print(f"HTML served at http://{get_local_ip()}:8080")
+    
     httpd.serve_forever()
 
 
