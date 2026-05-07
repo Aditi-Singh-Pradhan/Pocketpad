@@ -1,16 +1,11 @@
 import asyncio
 import websockets
 import json
-import pyautogui
 import http.server
 import threading
 import os
+from pynput.mouse import Controller, Button
 
-# Prevent accidental stop if cursor hits corner
-pyautogui.FAILSAFE = False
-
-# Screen Size
-SCREEN_WIDTH, SCREEN_HEIGHT = pyautogui.size()
 
 print("Server is running... Waiting for Phone to connect.")
 
@@ -40,6 +35,7 @@ class ConnectionState:
 
         self.prev_dx = 0
         self.prev_dy = 0
+        self.mouse = Controller()
 
     def handle_move(self, data):
         dx = data.get("dx", 0)
@@ -61,20 +57,17 @@ class ConnectionState:
         dy *= self.damping
 
         # Move cursor
-        pyautogui.moveRel(dx * self.sensitivity, dy * self.sensitivity)
+        self.mouse.move(int(dx * self.sensitivity), int(dy * self.sensitivity))
 
     def handle_click(self, data):
-        button = data.get("button", "left")
-        pyautogui.click(button=button)
-    
+        button = Button.left if data.get("button", "left") == "left" else Button.right
+        self.mouse.click(button)
+
     def handle_scroll(self, data):
         scroll_x = data.get("scroll_x", 0)
         scroll_y = data.get("scroll_y", 0)
 
-        if scroll_x != 0:
-            pyautogui.hscroll(scroll_x)
-        if scroll_y != 0:
-            pyautogui.scroll(scroll_y)
+        self.mouse.scroll(scroll_x, scroll_y)
 
 
 # Handle incoming WebSocket connections
