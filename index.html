@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 
-<body style="margin:0; overflow:hidden;">
+<body style="margin:0; overflow:hidden">
 <canvas id="c"></canvas>
 
 <script>
@@ -23,6 +23,12 @@ let startY = null;
 let lastX = null;
 let lastY = null;
 let scrollLastY = null;
+
+// Aesthetic Background
+
+canvas.style.backgroundImage = "url(background.jpg)";
+
+// Touch handling
 
 canvas.addEventListener("touchstart", (e) => {
     e.preventDefault();
